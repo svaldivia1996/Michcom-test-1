@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Motos</title>
+    <link rel="stylesheet" type="text/css" href="estilo.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+</head>
+
+
+<body>
+
+
+<div class="titulo negrita">Prueba Tecnica 1</div>
+<div class="main">
+
+    <form id="miformulario" >
+
+        <div class="entrada">
+
+            <div class="leyenda">Usuario</div>
+
+            <input type="text" onchange="update()"  id="user">
+        </div>
+
+        <div class="entrada">
+
+            <div class="leyenda">Motos disponibles: </div>
+
+            <strong><span id="motos-disp"></span></strong>
+        </div>
+
+    </form>
+
+    <div id="horarios">Horarios</div>
+
+</div>
+
+<div id="error">Este es un mensaje de error</div>
+
+
+
+<script>
+
+    var horariosJSON
+    var motos = 8
+    let motosSelector = document.getElementById("motos-disp")
+    main()
+
+
+
+    async function main() {
+
+        let hour = moment(moment().format('YYYY-MM-DDT07:30:00'))
+        let hoursListSelector = document.getElementById("horarios")
+
+        var contadorHora = 0
+        var aux =[]
+
+        while (hour.format('HH:mm') !== '20:00') {
+            hour.add('30', 'minutes')
+
+            let rowId = `hour-${hour.format('HHmm')}`
+
+            aux.push({"hora": rowId, "user": null})
+
+            horariosJSON = JSON.parse(JSON.stringify(aux))
+
+            hoursListSelector.innerHTML += `
+            <button id="${contadorHora}" class="horaBoton" onclick="verify(this.id)">${hour.format('LT')}</button>`
+            contadorHora++
+        }
+        // console.log(horariosJSON)
+        update()
+
+    }
+
+    async function verify(horaId){
+        currentUser = document.getElementById("user").value
+        currentButton = document.getElementById(horaId)
+        // console.log(horariosJSON[horaId].hora)
+        if (motos > 0 && horariosJSON[horaId].user == null){
+            motos--
+            horariosJSON[horaId]["user"] = currentUser
+            currentButton.style.backgroundColor = "#488c12" //verde
+        }
+        else if (horariosJSON[horaId].user == currentUser){
+            motos++
+            horariosJSON[horaId]["user"] = null
+            currentButton.style.backgroundColor = "#8a8787" //gris
+        }
+        update()
+
+    }
+
+    async function update(){
+        motosSelector.innerHTML = motos
+        var aux = 0
+        horariosJSON.forEach(nombre =>{
+            if (document.getElementById("user").value != nombre.user && nombre.user !=null){
+                var currentButton = document.getElementById(aux)
+                currentButton.style.backgroundColor = "#ca0404"
+                // console.log(nombre)
+                // let boton = document.getElementById(nombre.hora)
+            }
+            else if (document.getElementById("user").value == nombre.user){
+                var currentButton = document.getElementById(aux)
+                currentButton.style.backgroundColor = "#488c12"
+                // console.log(nombre)
+                // let boton = document.getElementById(nombre.hora)
+            }
+            aux++
+
+        })
+    }
+
+
+
+</script>
+
+</body>
+
+
+</html>
